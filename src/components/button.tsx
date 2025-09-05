@@ -5,12 +5,13 @@ interface ButtonProps {
   variant: ButtonVariant;
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const variants = {
-  primary: "btn-primary",
-  secondary: "btn-secondary",
-  outline: "btn-outline",
+  primary: "button-primary",
+  secondary: "button-secondary",
+  outline: "button-outline",
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -18,11 +19,13 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   variant,
   className,
+  disabled,
 }) => {
   return (
     <button
       className={`button ${variants[variant]} ${className || ""}`}
       onClick={onClick}
+      disabled={disabled}
     >
       {text}
     </button>
