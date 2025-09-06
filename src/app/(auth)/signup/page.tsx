@@ -17,6 +17,7 @@ interface FormState {
 
 const SignUp = () => {
   const { t } = useTranslation("signup");
+  const { t: tValidations } = useTranslation("validations");
   const [signUpForm, setSignupForm] = useState<FormState>({
     email: { value: "", isValid: false },
     username: { value: "", isValid: false },
@@ -25,15 +26,36 @@ const SignUp = () => {
     invite_code: { value: "", isValid: false },
   });
 
-  const isFormValid = Object.values(signUpForm).every((field) => field.isValid);
+  console.log("value" + signUpForm.username.value);
 
-  const handleChange = (name: string, value: string, isValid: boolean) => {
+  const isPasswordMatch = () => {
+    if (
+      signUpForm.password.value.length > 0 &&
+      signUpForm.repeat_password.value.length > 0
+    ) {
+      return signUpForm.password.value === signUpForm.repeat_password.value;
+    }
+  };
+
+  const isFormValid =
+    isPasswordMatch() &&
+    Object.values(signUpForm).every((field) => field.isValid);
+
+  console.log(isFormValid);
+  console.log(signUpForm);
+  const handleValueChange = (name: string, value: string) => {
     setSignupForm((prev) => ({
       ...prev,
-      [name]: { value, isValid },
+      [name]: { ...prev[name], value },
     }));
   };
 
+  const handleValidationChange = (name: string, isValid: boolean) => {
+    setSignupForm((prev) => ({
+      ...prev,
+      [name]: { ...prev[name], isValid },
+    }));
+  };
   return (
     <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-primary">
       <div className="grid md:grid-cols-2 w-full">
@@ -44,58 +66,58 @@ const SignUp = () => {
           <h1 className="heading-margin">{t("signup")}</h1>
           <div className="items-center grid grid-cols-1 gap-4 [&>*:last-child]:mt-4">
             <Input
-              name="user-name"
+              name="username"
               placeHolder={t("username")}
-              onChange={(val) =>
-                handleChange("username", val, signUpForm.email.isValid)
+              onChange={(val) => handleValueChange("username", val)}
+              onValidationChange={(isValid) =>
+                handleValidationChange("username", isValid)
               }
               required
             />
             <Input
               name="email"
-              placeHolder="email"
-              onChange={(val) =>
-                handleChange("email", val, signUpForm.email.isValid)
-              }
+              placeHolder={t("email")}
+              onChange={(val) => handleValueChange("email", val)}
               onValidationChange={(isValid) =>
-                handleChange("email", signUpForm.email.value, isValid)
+                handleValidationChange("email", isValid)
               }
               required
               type="email"
             />
             <Input
+              type="password"
               name="password"
               placeHolder={t("password")}
-              onChange={(val) =>
-                handleChange("password", val, signUpForm.email.isValid)
-              }
+              onChange={(val) => handleValueChange("password", val)}
               onValidationChange={(isValid) =>
-                handleChange("password", signUpForm.email.value, isValid)
+                handleValidationChange("password", isValid)
               }
               required
             />
             <Input
-              name="password"
+              type="password"
+              name="repeat_password"
               placeHolder={t("repeat_password")}
-              onChange={(val) =>
-                handleChange("repeat_password", val, signUpForm.email.isValid)
-              }
+              onChange={(val) => handleValueChange("repeat_password", val)}
               onValidationChange={(isValid) =>
-                handleChange("repeat_password", signUpForm.email.value, isValid)
+                handleValidationChange("repeat_password", isValid)
               }
               required
             />
             <Input
               name="invite_code"
               placeHolder={t("invite_code")}
-              onChange={(val) =>
-                handleChange("invite_code", val, signUpForm.email.isValid)
-              }
+              onChange={(val) => handleValueChange("invite_code", val)}
               required
               onValidationChange={(isValid) =>
-                handleChange("invite_code", signUpForm.email.value, isValid)
+                handleValidationChange("invite_code", isValid)
               }
             />
+            {!isPasswordMatch() && (
+              <p className="validation-error">
+                {tValidations("passwords_match_error")}
+              </p>
+            )}
             <Button
               disabled={!isFormValid}
               variant="primary"
