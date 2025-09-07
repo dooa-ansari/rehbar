@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Space } from "lucide-react";
 
 //how to protect this page
+//in case of bigger forms use react hook form
 
 interface FormState {
   [key: string]: { value: string; isValid: boolean };
@@ -26,8 +27,6 @@ const SignUp = () => {
     invite_code: { value: "", isValid: false },
   });
 
-  console.log("value" + signUpForm.username.value);
-
   const isPasswordMatch = () => {
     if (
       signUpForm.password.value.length > 0 &&
@@ -41,8 +40,6 @@ const SignUp = () => {
     isPasswordMatch() &&
     Object.values(signUpForm).every((field) => field.isValid);
 
-  console.log(isFormValid);
-  console.log(signUpForm);
   const handleValueChange = (name: string, value: string) => {
     setSignupForm((prev) => ({
       ...prev,
@@ -56,6 +53,9 @@ const SignUp = () => {
       [name]: { ...prev[name], isValid },
     }));
   };
+
+  const onClickSubmit = () => {};
+
   return (
     <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-primary">
       <div className="grid md:grid-cols-2 w-full">
