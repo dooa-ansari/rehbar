@@ -1,6 +1,6 @@
 type ButtonVariant = "primary" | "secondary";
 
-interface ButtonProps {
+export interface ButtonProps {
   text: string;
   variant: ButtonVariant;
   onClick: () => void;
