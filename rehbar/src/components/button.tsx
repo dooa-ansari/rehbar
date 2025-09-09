@@ -1,7 +1,7 @@
 type ButtonVariant = "primary" | "secondary";
 
 interface ButtonProps {
-  text: string;
+  text?: string;
   variant: ButtonVariant;
   onClick: () => void;
   className?: string;

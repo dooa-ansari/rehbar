@@ -112,14 +112,14 @@ const CreateSkillsGraph = () => {
           targetHandle: "top",
           type: "smoothstep",
           style: {
-            stroke: "var(--color-green-500)",
+            stroke: "var(--color-secondary)",
             strokeWidth: 2,
           },
           markerEnd: {
             type: MarkerType.ArrowClosed,
             width: 20,
             height: 20,
-            color: "var(--color-green-500)",
+            color: "var(--color-secondary)",
           },
         });
       }
@@ -140,14 +140,14 @@ const CreateSkillsGraph = () => {
             type: "smoothstep",
             animated: false,
             style: {
-              stroke: "var(--color-green-500)",
+              stroke: "var(--color-secondary)",
               strokeWidth: 2,
             },
             markerEnd: {
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: "var(--color-green-500)",
+              color: "var(--color-secondary)",
             },
           });
         }
@@ -160,7 +160,7 @@ const CreateSkillsGraph = () => {
   const [reactFlowEdges, setEdges, onEdgesChange] = useEdgesState(edges);
 
   useEffect(() => {
-    addChild(ROOT_NODE_ID, uuidv4(), "Skills", "rootNode");
+    //addChild(ROOT_NODE_ID, uuidv4(), "Skills", "rootNode");
   }, []);
 
   useEffect(() => {
@@ -173,7 +173,6 @@ const CreateSkillsGraph = () => {
       style={{
         width: "100%",
         height: "100vh",
-        backgroundColor: "var(--color-gray-100)",
       }}
     >
       <ReactFlow
@@ -187,14 +186,14 @@ const CreateSkillsGraph = () => {
         defaultEdgeOptions={{
           type: "smoothstep",
           style: {
-            stroke: "var(--color-green-500)",
+            stroke: "var(--color-secondary)",
             strokeWidth: 2,
           },
           markerEnd: {
             type: MarkerType.ArrowClosed,
             width: 20,
             height: 20,
-            color: "var(--color-green-500)",
+            color: "var(--color-secondary)",
           },
         }}
       >

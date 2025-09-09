@@ -13,6 +13,8 @@ import Button from "@/components/button";
 import { FaPlus } from "react-icons/fa";
 import Panel, { usePanel } from "@/components/panel";
 import Input from "../input";
+import { MemoizedSearchPopup, SearchPopupData } from "../search_popup";
+import { useSkills } from "@/providers/apis/skills";
 
 interface RootNodeProps {
   id: string;
@@ -35,12 +37,26 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
   const rootNodeData = getRootNodeData();
   const rootNodeTitle = getNodeTitle(id);
 
-  // const [searchKeywordAssociatedPages, setSearchKeywordAssociatedPages] =
-  //   useState("");
+  const [keywordSkills, setSkillsKeyword] = useState("");
+  const {
+    data: skillsData,
+    isLoading,
+    isError,
+    error,
+  } = useSkills(keywordSkills);
 
   const [slug, setSlug] = useState("");
 
   const [status, setStatus] = useState<PageStatus>("draft");
+
+  const addChild = (item: SearchPopupData) => {
+    const newChildId = uuidv4()
+    addNodeData({
+      parentId: ROOT_NODE_ID,
+      id: newChildId,
+    });
+    insertSiblingAfter(id, newChildId, CHILD_NODE_ID, item.name);
+  };
 
   return (
     <motion.div
@@ -48,7 +64,7 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{ duration: 0.3 }}
-      className="w-[420px] bg-transparent overflow-hidden relative mx-auto mt-8 mb-8"
+      className="rood_node"
     >
       {data.mainNode && (
         <>
@@ -80,7 +96,29 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
       />
 
       <div>
-        <Input placeHolder={"Mobile Developer"} onChange={() => {}} name={"forTitle"} />
+        <Input
+          placeHolder={t("designation")}
+          onChange={() => {}}
+          name={"forTitle"}
+        />
+
+        <div className="flex items-end justify-center flex-1 mt-8">
+          <MemoizedSearchPopup
+            data={(skillsData ?? []).map((item) => ({
+              id: item.id,
+              name: item.name,
+            }))}
+            isLoading={false}
+            error={null}
+            refetch={() => {}}
+            searchKeyword={keywordSkills}
+            setSearchKeyword={setSkillsKeyword}
+            onClickItem={addChild}
+            trigger={
+              <FaPlus className="text-primary text-3xl rounded-full p-2 shadow-md cursor-pointer" />
+            }
+          />
+        </div>
       </div>
       <Panel
         width="60vw"

@@ -1,5 +1,3 @@
-
-
 export interface SkillsGraph {
   id: string;
   title: string;
@@ -19,7 +17,6 @@ export interface NodeData {
   status?: string;
 }
 
-
 export interface TreeNodeData {
   id: string;
   label: string;
@@ -35,4 +32,10 @@ export interface RootTreeNodeData {
   label: string;
   children: TreeNodeData[];
   mainNode: boolean;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  description: string | null;
 }

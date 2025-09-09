@@ -3,77 +3,60 @@
 import React, { useState } from "react";
 
 import { useContentCollectionStore } from "@/store/content_collection";
+import { motion } from "framer-motion";
 import { Handle, Position } from "@xyflow/react";
 import { useTreeStore } from "@/store/tree_store";
 import { v4 as uuidv4 } from "uuid";
-import {
-  FiFileText,
-  FiArrowUp,
-  FiArrowDown,
-  FiChevronDown,
-  FiChevronRight,
-} from "react-icons/fi";
-import { t } from "i18next";
-import { PAGE_STATUS, ROOT_NODE_ID, CHILD_NODE_ID } from "@/utils/constants";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import { PageStatus, ROOT_NODE_ID, CHILD_NODE_ID } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
 import Button from "@/components/button";
+import { FaPlus } from "react-icons/fa";
 import Panel, { usePanel } from "@/components/panel";
+import Input from "../input";
+import { MemoizedSearchPopup } from "../search_popup";
+import { useSkills } from "@/providers/apis/skills";
 
-interface ChildNodeProps {
+interface RootNodeProps {
   id: string;
   data: {
     label: string;
     payload: Record<string, unknown>;
     mainNode: boolean;
-    collapsed: boolean;
   };
 }
 
-const ChildNode: React.FC<ChildNodeProps> = ({ id, data }) => {
-  const {
-    addNodeData,
-    getRootNodeData,
-    getNodeData,
-    setAssociatedPage,
-    setContentType,
-    updateRootNodeContentType,
-    updateNodeContentType,
-    getFilteredAssociatedPages,
-    removeNodeDataWithChildren,
-    updateNodeProperty,
-    getNodeTitle,
-  } = useContentCollectionStore();
-  const {
-    insertSiblingAfter,
-    addChild,
-    removeNode,
-    moveNodeUp,
-    moveNodeDown,
-    toggleCollapse,
-  } = useTreeStore();
-  const hasChildren = useTreeStore((state) => state.hasChildren(id));
-  const [createContentType, setCreateContentType] = useState(0);
+const ChildNode: React.FC<RootNodeProps> = ({ id, data }) => {
+  const { t } = useTranslation();
+  const insertSiblingAfter = useTreeStore((state) => state.insertSiblingAfter);
+  const [panelContentId, setPanelContentId] = useState("root-node-panel");
+  const { isPanelOpen, openPanel, closePanel } = usePanel("root-node-panel");
+  const [isEditingContent, setIsEditingContent] = useState(false);
+
+  const { getRootNodeData, addNodeData, getNodeTitle, updateNodeProperty } =
+    useContentCollectionStore();
   const rootNodeData = getRootNodeData();
-  const nodeData = getNodeData(id);
-  const parentNodeData = getNodeData(nodeData?.parentId || "");
-  const nodeTitle = getNodeTitle(id);
-  const { isPanelOpen, openPanel, closePanel } = usePanel(
-    `child-node-panel-${id}`
-  );
-  const [isChangeContentTypePopupOpen, setIsChangeContentTypePopupOpen] =
-    useState(false);
+  const rootNodeTitle = getNodeTitle(id);
 
-  const [panelContentId, setPanelContentId] = useState("child-node-panel");
+  const [keywordSkills, setSkillsKeyword] = useState("");
+  const {
+    data: skillsData,
+    isLoading,
+    isError,
+    error,
+  } = useSkills(keywordSkills);
 
-  const [status, setStatus] = useState();
+  const [slug, setSlug] = useState("");
 
-  const onRemoveNode = () => {
-    removeNode(id);
-    removeNodeDataWithChildren(id);
-  };
+  const [status, setStatus] = useState<PageStatus>("draft");
 
   return (
-    <div className="w-[420px] bg-transparent overflow-hidden relative mx-auto mt-8 mb-8">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.3 }}
+      className="child_node"
+    >
       {data.mainNode && (
         <>
           <Handle
@@ -102,64 +85,41 @@ const ChildNode: React.FC<ChildNodeProps> = ({ id, data }) => {
         id="left"
         style={{ background: "var(--color-green-600)" }}
       />
-      <div className="flex justify-between">
-        <div className="flex gap-2">
-          {/* <IconButton
-            id="move-node-up"
-            icon={FiArrowUp}
-            iconColor="var(--color-gray-600)"
-            onClick={() => moveNodeUp(id)}
-          />
-          <IconButton
-            id="move-node-down"
-            icon={FiArrowDown}
-            iconColor="var(--color-gray-600)"
-            onClick={() => moveNodeDown(id)}
-          /> */}
-        </div>
+
+      <div className="flex items-end justify-end flex-1">
+        <MemoizedSearchPopup
+          data={(skillsData ?? []).map((item) => ({
+            id: item.id,
+            name: item.name,
+          }))}
+          isLoading={false}
+          error={null}
+          refetch={() => {}}
+          searchKeyword={keywordSkills}
+          setSearchKeyword={setSkillsKeyword}
+          onClickItem={() => {}}
+          trigger={
+            <FaPlus className="text-secondary text-3xl rounded-full p-2 shadow-md cursor-pointer" />
+          }
+        />
       </div>
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative mx-auto mt-5 mb-2 pb-2">
-        <div className="flex items-center justify-between w-full bg-pink-500 text-white font-normal text-2xl text-center py-2 px-6">
-          <div className="flex items-center flex-row">
-            <FiFileText className="text-white mr-2" size={22} />
-          </div>
 
-          {/* <StatusChip
-            status={status}
-            onStatusChange={(val: string) => {
-              setStatus(val); 
-              updateNodeProperty(id, "status", val);
-            }}
-            readOnly={false}
-          /> */}
-        </div>
-
-        <div className="flex items-center pt-6 justify-between">
-          {/* <div className="flex gap-2 pr-6 items-center">
-            {hasChildren && (
-              <div>
-                {data.collapsed ? (
-                  <IconButton
-                    id="collapse-button"
-                    icon={FiChevronDown}
-                    iconColor="var(--color-gray-600)"
-                    hoverClassName="bg-pink-500"
-                    onClick={() => toggleCollapse(id)}
-                  />
-                ) : (
-                  <IconButton
-                    id="collapse-button"
-                    icon={FiChevronRight}
-                    iconColor="var(--color-gray-600)"
-                    hoverClassName="bg-pink-500"
-                    onClick={() => toggleCollapse(id)}
-                  />
-                )}
-              </div>
-            )}
-            
-          </div> */}
-        </div>
+      <div className="flex items-end justify-center flex-1 mt-8">
+        <MemoizedSearchPopup
+          data={(skillsData ?? []).map((item) => ({
+            id: item.id,
+            name: item.name,
+          }))}
+          isLoading={false}
+          error={null}
+          refetch={() => {}}
+          searchKeyword={keywordSkills}
+          setSearchKeyword={setSkillsKeyword}
+          onClickItem={() => {}}
+          trigger={
+            <FaPlus className="text-primary text-3xl rounded-full p-2 shadow-md cursor-pointer" />
+          }
+        />
       </div>
 
       <Panel
@@ -167,11 +127,11 @@ const ChildNode: React.FC<ChildNodeProps> = ({ id, data }) => {
         trigger={() => null}
         isOpen={isPanelOpen}
         onClose={closePanel}
-        panelId={`child-node-panel-${id}`}
+        panelId="root-node-panel"
       >
         <div></div>
       </Panel>
-    </div>
+    </motion.div>
   );
 };
 

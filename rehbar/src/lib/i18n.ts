@@ -23,6 +23,9 @@ const resources = {
       repeat_password: "Repeat Password",
       invite_code: "Invite Code",
     },
+    root_node: {
+      designation: "Enter Designation"
+    }
   },
 };
 
@@ -31,7 +34,7 @@ if (!i18n.isInitialized) {
     resources,
     lng: "en",
     fallbackLng: "en",
-    ns: ["common", "signup", "validations"],
+    ns: ["common", "signup", "validations", "root_node"],
     defaultNS: "common",
     interpolation: {
       escapeValue: false,
