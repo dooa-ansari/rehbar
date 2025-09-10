@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { TreeNodeData } from "models/content_collection_types";
-import { RootTreeNodeData } from "models/content_collection_types";
+import { TreeNodeData } from "@/types/skills_graph";
+import { RootTreeNodeData } from "@/types/skills_graph";
 
 interface TreeStore {
   treeData: RootTreeNodeData;
@@ -23,8 +23,6 @@ interface TreeStore {
     label: string
   ) => void;
   toggleCollapse: (nodeId: string) => void;
-  moveMainNodeUp: (nodeId: string) => void;
-  moveMainNodeDown: (nodeId: string) => void;
   moveNodeUp: (nodeId: string) => void;
   moveNodeDown: (nodeId: string) => void;
   hasChildren: (nodeId: string) => boolean;
@@ -161,30 +159,6 @@ export const useTreeStore = create<TreeStore>()(
               }
             };
             toggle(state.treeData);
-          }),
-
-        moveMainNodeUp: (nodeId) =>
-          set((state) => {
-            const root = state.treeData;
-            if (!root.children) return;
-            const idx = root.children.findIndex((child) => child.id === nodeId);
-            if (idx > 0) {
-              const temp = root.children[idx - 1];
-              root.children[idx - 1] = root.children[idx];
-              root.children[idx] = temp;
-            }
-          }),
-
-        moveMainNodeDown: (nodeId) =>
-          set((state) => {
-            const root = state.treeData;
-            if (!root.children) return;
-            const idx = root.children.findIndex((child) => child.id === nodeId);
-            if (idx !== -1 && idx < root.children.length - 1) {
-              const temp = root.children[idx + 1];
-              root.children[idx + 1] = root.children[idx];
-              root.children[idx] = temp;
-            }
           }),
 
         moveNodeUp: (nodeId) =>

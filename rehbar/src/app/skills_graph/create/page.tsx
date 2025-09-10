@@ -43,7 +43,7 @@ const CreateSkillsGraph = () => {
   const treeLayout = useMemo(() => {
     return d3
       .tree<TreeNodeData>()
-      .nodeSize([600, 600])
+      .nodeSize([450, 600])
       .separation((a, b) => (a.parent === b.parent ? 1 : 1.5));
   }, []);
 

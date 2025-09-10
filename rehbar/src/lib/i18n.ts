@@ -25,6 +25,12 @@ const resources = {
     },
     root_node: {
       designation: "Enter Designation"
+    },
+    child_node: {
+      remove_node: "Remove Skill",
+      remove_node_confirmation: "Are you sure you want to remove this skill?",
+      yes: "Yes",
+      no: "No"
     }
   },
 };

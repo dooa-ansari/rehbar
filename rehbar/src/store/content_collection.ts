@@ -59,7 +59,7 @@ export const useContentCollectionStore = create<ContentCollectionStore>()(
       getNodeDataMap: () => get().nodeDataMap,
       getNodeTitle: (id: string) => {
         const nodeData = get().getNodeData(id);
-        return  "";
+        return  nodeData?.title || "";
       },
       getNodeStatus: (id: string) => {
         const nodeData = get().getNodeData(id);

@@ -87,6 +87,10 @@ label {
   @apply text-sm text-text font-semibold;
 }
 
+h3 {
+  @apply text-lg text-text font-semibold;
+}
+
 .validation-error {
   @apply text-sm text-text font-semibold bg-danger;
 }
