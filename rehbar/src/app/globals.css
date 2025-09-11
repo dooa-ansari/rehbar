@@ -128,6 +128,10 @@ input {
   @apply p-4 md:px-8 lg:px-12;
 }
 
+.background {
+  @apply flex flex-col gap-4 min-h-screen items-center justify-center bg-primary
+}
+
 /* .heading-xl {
    @apply text-xl py-4 font-bold text-gray-700 text-center;
  }

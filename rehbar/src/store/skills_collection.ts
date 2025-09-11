@@ -1,17 +1,14 @@
-import { NodeData } from "@/types/skills_graph";
+import { NodeData, SkillsGraph } from "@/types/skills_graph";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export interface ContentCollectionStore {
+export interface SkillsCollectionStore {
   nodeDataMap: Map<string, NodeData>;
   rootNodeId: string | null;
-  inUsePages: Set<string>;
   isEditing: boolean;
-  setIsEditing: (isEditing: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void; 
   getIsEditing: () => boolean;
-  getInUsePages: () => Set<string>;
   setNodeMap: (nodeMap: Map<string, NodeData>) => void;
-  setInUsePages: (inUsePages: Set<string>) => void;
   setRootNodeId: (rootNodeId: string) => void;
   getRootNodeId: () => string | null;
   setNodeDataMap: (nodeDataMap: Map<string, NodeData>) => void;
@@ -27,8 +24,11 @@ export interface ContentCollectionStore {
     key: K,
     value: NodeData[K]
   ) => void;
-  resetContentCollection: () => void;
+  resetSkillsCollection: () => void;
+  setSkillsGraph: (skillsGraph: SkillsGraph) => void;
+  getSkillsGraph: () => SkillsGraph | null;
   getNodeDataMap: () => Map<string, NodeData>;
+  skillsGraph: SkillsGraph | null;
 }
 
 const serializeMap = (map: Map<string, NodeData>): [string, NodeData][] => {
@@ -41,22 +41,22 @@ const deserializeMap = (
   return new Map(entries);
 };
 
-export const useContentCollectionStore = create<ContentCollectionStore>()(
+export const useSkillsCollectionStore = create<SkillsCollectionStore>()(
   persist(
     (set, get) => ({
-      contentCollection: null,
+      skillsGraph: null,
       nodeDataMap: new Map(),
       rootNodeId: null,
-      inUsePages: new Set(),
       isEditing: false,
       setIsEditing: (isEditing: boolean) => set({ isEditing }),
-      getIsEditing: () => get().isEditing,
-      setInUsePages: (inUsePages: Set<string>) => set({ inUsePages }),
       setRootNodeId: (rootNodeId: string) => set({ rootNodeId }),
-      getInUsePages: () => get().inUsePages,
+      getRootNodeId: () => get().rootNodeId,
+      setSkillsGraph: (skillsGraph: SkillsGraph) => set({ skillsGraph }),
+      getSkillsGraph: () => get().skillsGraph,
       setNodeMap: (nodeMap: Map<string, NodeData>) =>
         set({ nodeDataMap: nodeMap }),
       getNodeDataMap: () => get().nodeDataMap,
+      getIsEditing: () => get().isEditing,
       getNodeTitle: (id: string) => {
         const nodeData = get().getNodeData(id);
         return  nodeData?.title || "";
@@ -84,7 +84,6 @@ export const useContentCollectionStore = create<ContentCollectionStore>()(
             nodeDataMap: state.nodeDataMap.set(nodeData.id, nodeData),
           };
         }),
-      getRootNodeId: () => get().rootNodeId,
       setRootNodeData: (nodeData: NodeData) =>
         set((state) => {
           if (state.nodeDataMap.has(nodeData.id)) {
@@ -120,27 +119,28 @@ export const useContentCollectionStore = create<ContentCollectionStore>()(
           }
           return state;
         }),
-      resetContentCollection: () =>
+      resetSkillsCollection: () =>
         set(() => ({
           nodeDataMap: new Map(),
           rootNodeId: null,
-          inUsePages: new Set(),
-          isEditing: false,
+          skillsGraph: null,
         })),
     }),
     {
-      name: "content-collection-store",
+      name: "skills-collection-store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         nodeDataMap: serializeMap(state.nodeDataMap),
         rootNodeId: state.rootNodeId,
         isEditing: state.isEditing,
+        skillsGraph: state.skillsGraph,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           (state as any).nodeDataMap = deserializeMap(
             state.nodeDataMap as unknown as [string, NodeData][]
           );
+          (state as any).skillsGraph = state.skillsGraph;
         }
       },
     }

@@ -19,11 +19,13 @@ import { useTreeStore } from "@/store/tree_store";
 
 import RootNode from "@/components/nodes/root_node";
 import ChildNode from "@/components/nodes/child_node";
-import { TreeNodeData } from "@/types/skills_graph";
+import { SkillsGraph, TreeNodeData } from "@/types/skills_graph";
 import { ROOT_NODE_ID } from "@/utils/constants";
-import { useContentCollectionStore } from "@/store/content_collection";
+import { useSkillsCollectionStore } from "@/store/skills_collection";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "react-i18next";
+import { FloatingButton } from "@/components/floating_button";
+import { useCreateGraph, useUpdateGraph } from "@/providers/apis/graph";
 
 const nodeTypes = {
   rootNode: RootNode,
@@ -32,14 +34,15 @@ const nodeTypes = {
 
 const CreateSkillsGraph = () => {
   const { t } = useTranslation();
-  const { getRootNodeData, getNodeStatus, getNodeTitle } =
-    useContentCollectionStore();
+  const { getRootNodeData, getNodeStatus, getNodeTitle, getIsEditing, setIsEditing, getSkillsGraph, setSkillsGraph } =
+    useSkillsCollectionStore();
   const treeData = useTreeStore((state) => state.treeData);
-  const { addChild } = useTreeStore((state) => state);
+  const { mutate: createGraph } = useCreateGraph();
+  const { mutate: updateGraph } = useUpdateGraph();
 
-  const { getNodeDataMap, getInUsePages, getIsEditing, setIsEditing } =
-    useContentCollectionStore();
-  const isEditing = getIsEditing();
+  const { getNodeDataMap, getRootNodeId } =
+    useSkillsCollectionStore();
+  const rootNodeId = getRootNodeId();
   const treeLayout = useMemo(() => {
     return d3
       .tree<TreeNodeData>()
@@ -168,6 +171,50 @@ const CreateSkillsGraph = () => {
     setEdges(edges);
   }, [nodes, edges, setNodes, setEdges]);
 
+
+  const handleSave = () => {
+    const rootNodeData = getRootNodeData();
+    const rootNodeId = rootNodeData?.id;
+    console.log(rootNodeId);
+    if (!rootNodeId) {
+      console.log("No root node id");
+      return;
+    }
+    const skillsGraph: SkillsGraph = {
+      status: getNodeStatus(rootNodeId),
+      title: getNodeTitle(rootNodeId),
+      graph: {
+        tree_data: treeData,
+        node_map_data: Array.from(getNodeDataMap().entries()),
+        root_node_id: rootNodeId,
+      },
+      id: getIsEditing() ? getSkillsGraph()?.id ?? "" : uuidv4(),
+    };
+    if (getIsEditing()) {
+      updateGraph(skillsGraph, {
+        onSuccess: (data) => {
+          setIsEditing(true);
+          setSkillsGraph(data?.data as SkillsGraph);
+        },
+        onError: (error) => {
+          //toast.error(error.message);
+        },
+      });
+    } else {
+      console.log("Creating graph");
+      createGraph(skillsGraph, {
+        onSuccess: (data) => {
+          setIsEditing(true);
+          setSkillsGraph(data?.data as SkillsGraph);
+        },
+        onError: (error) => {
+          //toast.error(error.message);
+        },
+      });
+    }
+  };
+
+
   return (
     <div
       style={{
@@ -200,6 +247,10 @@ const CreateSkillsGraph = () => {
         <Background />
         <Controls />
       </ReactFlow>
+      <FloatingButton
+        handleAction={handleSave}
+        icon={getIsEditing() ? <FiSave size={28} /> : <FiCheck size={28} />}
+      />
     </div>
   );
 };

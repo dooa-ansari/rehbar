@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import { useContentCollectionStore } from "@/store/content_collection";
+import {  useSkillsCollectionStore } from "@/store/skills_collection";
 import { motion } from "framer-motion";
 import { Handle, Position } from "@xyflow/react";
 import { useTreeStore } from "@/store/tree_store";
@@ -33,7 +33,7 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
   const [isEditingContent, setIsEditingContent] = useState(false);
 
   const { getRootNodeData, addNodeData, getNodeTitle, updateNodeProperty } =
-    useContentCollectionStore();
+    useSkillsCollectionStore();
   const rootNodeData = getRootNodeData();
   const rootNodeTitle = getNodeTitle(id);
 

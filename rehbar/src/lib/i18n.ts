@@ -31,6 +31,11 @@ const resources = {
       remove_node_confirmation: "Are you sure you want to remove this skill?",
       yes: "Yes",
       no: "No"
+    },
+    skills_graph: {
+      your_skills_graphs: "Your Skills Graphs",
+      create_new: "Create New",
+      create_skill: "Create Skill"
     }
   },
 };
@@ -40,7 +45,7 @@ if (!i18n.isInitialized) {
     resources,
     lng: "en",
     fallbackLng: "en",
-    ns: ["common", "signup", "validations", "root_node"],
+    ns: ["common", "signup", "validations", "root_node", "skills_graph"],
     defaultNS: "common",
     interpolation: {
       escapeValue: false,

@@ -57,7 +57,7 @@ const SignUp = () => {
   const onClickSubmit = () => {};
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-primary">
+    <div className="background">
       <div className="grid md:grid-cols-2 w-full">
         <div>
           <Lottie animationData={PeaceAnimation} loop={true} autoplay={true} />

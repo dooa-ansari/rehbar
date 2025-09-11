@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import { useContentCollectionStore } from "@/store/content_collection";
+import { useSkillsCollectionStore } from "@/store/skills_collection";
 import { motion } from "framer-motion";
 import { Handle, Position } from "@xyflow/react";
 import { useTreeStore } from "@/store/tree_store";
@@ -53,7 +53,7 @@ const ChildNode: React.FC<ChildNodeProps> = ({ id, data }) => {
     getNodeTitle,
     updateNodeProperty,
     removeNodeDataWithChildren,
-  } = useContentCollectionStore();
+  } = useSkillsCollectionStore();
   const rootNodeData = getRootNodeData();
   const nodeTitle = getNodeTitle(id);
 

@@ -7,4 +7,8 @@ export const EndPoint: EndPointType = {
     key: "skills",
     url: "/skills",
   },
+  graph: {
+    key: "graph",
+    url: "/graph",
+  },
 };

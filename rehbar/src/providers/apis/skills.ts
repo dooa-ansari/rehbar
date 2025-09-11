@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -9,7 +8,7 @@ import { Skill } from "@/types/skills_graph";
 import { EndPoint } from "../endpoints";
 import { apiClient } from "../axios_client";
 
-export const useSkills = (query: string) => {
+export const useSkills = (query?: string) => {
   return useQuery<Skill[]>({
     queryKey: [EndPoint.skills.key, query],
     queryFn: async () => {

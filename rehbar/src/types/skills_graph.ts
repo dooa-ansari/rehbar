@@ -3,9 +3,9 @@ export interface SkillsGraph {
   title: string;
   slug?: string;
   status: string;
-  graph_structure: any;
-  created_at: string;
-  updated_at: string;
+  graph: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface NodeData {
