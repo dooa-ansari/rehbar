@@ -7,8 +7,9 @@ import Card from "@/components/card";
 import Lottie from "lottie-react";
 import PeaceAnimation from "@/assets/animations/peace.json";
 import { useTranslation } from "react-i18next";
-import useSignup from "@/providers/apis/auth";
+import { useLogin } from "@/providers/apis/auth";
 import { useRouter } from "next/navigation";
+import { SignInUser, User } from "@/types/auth";
 
 //how to protect this page
 //in case of bigger forms use react hook form
@@ -17,55 +18,44 @@ interface FormState {
   [key: string]: { value: string; isValid: boolean };
 }
 
-const SignUp = () => {
-  const { t } = useTranslation("signup");
+
+const SignIn = () => {
+  const { t } = useTranslation("signin");
   const router = useRouter();
-  const { mutate: signup } = useSignup();
+  const { mutate: signin } = useLogin();
   const { t: tValidations } = useTranslation("validations");
-  const [signUpForm, setSignupForm] = useState<FormState>({
+  const [signInForm, setSignInForm] = useState<FormState>({
     email: { value: "", isValid: false },
-    username: { value: "", isValid: false },
     password: { value: "", isValid: false },
-    repeat_password: { value: "", isValid: false },
-    invite_code: { value: "", isValid: false },
   });
 
-  const isPasswordMatch = () => {
-    if (
-      signUpForm.password.value.length > 0 &&
-      signUpForm.repeat_password.value.length > 0
-    ) {
-      return signUpForm.password.value === signUpForm.repeat_password.value;
-    }
-  };
-
   const isFormValid =
-    isPasswordMatch() &&
-    Object.values(signUpForm).every((field) => field.isValid);
+    Object.values(signInForm).every((field) => field.isValid);
 
   const handleValueChange = (name: string, value: string) => {
-    setSignupForm((prev) => ({
+    setSignInForm((prev) => ({
       ...prev,
       [name]: { ...prev[name], value },
     }));
   };
 
   const handleValidationChange = (name: string, isValid: boolean) => {
-    setSignupForm((prev) => ({
+    setSignInForm((prev) => ({
       ...prev,
       [name]: { ...prev[name], isValid },
     }));
   };
 
   const onClickSubmit = () => {
-    const user = {
-      name: signUpForm.username.value,
-      email: signUpForm.email.value,
-      password: signUpForm.password.value,
+    
+    const user: SignInUser = {
+      email: signInForm.email.value,
+      password: signInForm.password.value,
     };
-    signup(user, {
-      onSuccess: () => {
-        router.push("/signin");
+    signin(user, {
+      onSuccess: (data) => {
+        //console.log(data)
+        router.push("/skills_graph/list");
       },
       onError: () => {
         //toast.error(t("signup_error"));
@@ -80,17 +70,8 @@ const SignUp = () => {
           <Lottie animationData={PeaceAnimation} loop={true} autoplay={true} />
         </div>
         <div className="bg-secondary min-h-screen shadow-2xl container-padding">
-          <h1 className="heading-margin">{t("signup")}</h1>
+          <h1 className="heading-margin">{t("signin")}</h1>
           <div className="items-center grid grid-cols-1 gap-4 [&>*:last-child]:mt-4">
-            <Input
-              name="username"
-              placeHolder={t("username")}
-              onChange={(val) => handleValueChange("username", val)}
-              onValidationChange={(isValid) =>
-                handleValidationChange("username", isValid)
-              }
-              required
-            />
             <Input
               name="email"
               placeHolder={t("email")}
@@ -110,37 +91,11 @@ const SignUp = () => {
                 handleValidationChange("password", isValid)
               }
               required
-              minLength={8}
             />
-            <Input
-              type="password"
-              name="repeat_password"
-              placeHolder={t("repeat_password")}
-              onChange={(val) => handleValueChange("repeat_password", val)}
-              onValidationChange={(isValid) =>
-                handleValidationChange("repeat_password", isValid)
-              }
-              required
-              minLength={8}
-            />
-            <Input
-              name="invite_code"
-              placeHolder={t("invite_code")}
-              onChange={(val) => handleValueChange("invite_code", val)}
-              required
-              onValidationChange={(isValid) =>
-                handleValidationChange("invite_code", isValid)
-              }
-            />
-            {!isPasswordMatch() && (
-              <p className="validation-error">
-                {tValidations("passwords_match_error")}
-              </p>
-            )}
             <Button
               disabled={!isFormValid}
               variant="primary"
-              text={"signup"}
+              text={"signin"}
               onClick={onClickSubmit}
             />
           </div>
@@ -150,4 +105,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

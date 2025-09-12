@@ -11,4 +11,8 @@ export const EndPoint: EndPointType = {
     key: "graph",
     url: "/graph",
   },
+  auth: {
+    key: "auth",
+    url: "/auth",
+  },
 };
