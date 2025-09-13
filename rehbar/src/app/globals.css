@@ -21,6 +21,7 @@
   --color-surface: var(--color-rose-quartz);
   --color-text: var(--color-rich-black);
   --color-text-muted: var(--color-gray);
+  --color-secondary-text: var(--color-gray);
 
   /* Brand identity */
   --color-primary: var(--color-robin-egg-blue);
@@ -50,7 +51,7 @@
     --color-surface: var(--color-gun-metal);
     --color-text: var(--color-baby-powder);
     --color-text-muted: var(--color-gray);
-
+    --color-secondary-text: var(--color-gray);
     /* Brand identity */
     --color-primary: var(--color-robin-egg-blue);
     --color-primary-hover: var(--color-tiffany-blue);
@@ -80,7 +81,7 @@
 }
 
 h1 {
-  @apply text-5xl;
+  @apply text-2xl font-bold text-text;
 }
 
 label {

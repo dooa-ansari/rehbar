@@ -19,6 +19,7 @@ export interface SkillsCollectionStore {
   removeNodeDataWithChildren: (id: string) => void;
   getNodeTitle: (id: string) => string;
   getNodeStatus: (id: string) => string;
+  getNodeSlug: (id: string) => string;
   updateNodeProperty: <K extends keyof NodeData>(
     id: string,
     key: K,
@@ -57,13 +58,17 @@ export const useSkillsCollectionStore = create<SkillsCollectionStore>()(
         set({ nodeDataMap: nodeMap }),
       getNodeDataMap: () => get().nodeDataMap,
       getIsEditing: () => get().isEditing,
+      getNodeSlug: (id: string) => {
+        const nodeData = get().getNodeData(id);
+        return nodeData?.slug || "";
+      },
       getNodeTitle: (id: string) => {
         const nodeData = get().getNodeData(id);
         return  nodeData?.title || "";
       },
       getNodeStatus: (id: string) => {
         const nodeData = get().getNodeData(id);
-        return "published"
+        return nodeData?.status || "";
       },
       removeNodeDataWithChildren: (id: string) => {
         const nodeData = get().getNodeData(id);

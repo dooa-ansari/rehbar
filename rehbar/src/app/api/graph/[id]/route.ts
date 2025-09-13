@@ -11,12 +11,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         const { id } = await params;
+        console.log(id);
         const skillsGraph = await prisma.skillsGraph.findUnique({
             where: {
                 id,
             },
         });
-
+        console.log(skillsGraph);
         return NextResponse.json(skillsGraph);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

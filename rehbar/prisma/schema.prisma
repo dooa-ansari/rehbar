@@ -35,6 +35,9 @@ model Skill {
 model SkillsGraph {
   id String @id @default(cuid())
   graph Json
+  title String?
+  status String?
+  slug String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

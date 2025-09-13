@@ -26,6 +26,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { FloatingButton } from "@/components/floating_button";
 import { useCreateGraph, useUpdateGraph } from "@/providers/apis/graph";
+import { toast, ToastContainer } from "react-toastify";
 
 const nodeTypes = {
   rootNode: RootNode,
@@ -33,8 +34,8 @@ const nodeTypes = {
 };
 
 const CreateSkillsGraph = () => {
-  const { t } = useTranslation();
-  const { getRootNodeData, getNodeStatus, getNodeTitle, getIsEditing, setIsEditing, getSkillsGraph, setSkillsGraph } =
+  const { t } = useTranslation("skills_graph");
+  const { getRootNodeData, getNodeStatus, getNodeTitle, getNodeSlug, getIsEditing, setIsEditing, getSkillsGraph, setSkillsGraph } =
     useSkillsCollectionStore();
   const treeData = useTreeStore((state) => state.treeData);
   const { mutate: createGraph } = useCreateGraph();
@@ -97,8 +98,8 @@ const CreateSkillsGraph = () => {
           sourcePosition: Position.Right,
           targetPosition: Position.Left,
           style: {
-            width: 120,
-            height: 40,
+            width: 450,
+            height: 600,
           },
         });
       });
@@ -162,9 +163,6 @@ const CreateSkillsGraph = () => {
   const [reactFlowNodes, setNodes, onNodesChange] = useNodesState(nodes);
   const [reactFlowEdges, setEdges, onEdgesChange] = useEdgesState(edges);
 
-  useEffect(() => {
-    //addChild(ROOT_NODE_ID, uuidv4(), "Skills", "rootNode");
-  }, []);
 
   useEffect(() => {
     setNodes(nodes);
@@ -183,6 +181,7 @@ const CreateSkillsGraph = () => {
     const skillsGraph: SkillsGraph = {
       status: getNodeStatus(rootNodeId),
       title: getNodeTitle(rootNodeId),
+      slug: getNodeSlug(rootNodeId),
       graph: {
         tree_data: treeData,
         node_map_data: Array.from(getNodeDataMap().entries()),
@@ -190,25 +189,27 @@ const CreateSkillsGraph = () => {
       },
       id: getIsEditing() ? getSkillsGraph()?.id ?? "" : uuidv4(),
     };
+  
     if (getIsEditing()) {
       updateGraph(skillsGraph, {
         onSuccess: (data) => {
           setIsEditing(true);
           setSkillsGraph(data?.data as SkillsGraph);
+          toast.success(t("skills_graph_updated_successfully"));
         },
         onError: (error) => {
-          //toast.error(error.message);
+          toast.error(t("skills_graph_updated_error"));
         },
       });
     } else {
-      console.log("Creating graph");
       createGraph(skillsGraph, {
         onSuccess: (data) => {
           setIsEditing(true);
           setSkillsGraph(data?.data as SkillsGraph);
+          toast.success(t("skills_graph_created_successfully"));
         },
         onError: (error) => {
-          //toast.error(error.message);
+          toast.error(t("skills_graph_created_error"));
         },
       });
     }
@@ -251,6 +252,7 @@ const CreateSkillsGraph = () => {
         handleAction={handleSave}
         icon={getIsEditing() ? <FiSave size={28} /> : <FiCheck size={28} />}
       />
+      <ToastContainer />  
     </div>
   );
 };

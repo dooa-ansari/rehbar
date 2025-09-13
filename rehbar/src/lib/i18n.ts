@@ -35,7 +35,23 @@ const resources = {
     skills_graph: {
       your_skills_graphs: "Your Skills Graphs",
       create_new: "Create New",
-      create_skill: "Create Skill"
+      create_skill: "Create Skill",
+      title: "Title",
+      status: "Status",
+      slug: "Slug",
+      created: "Created",
+      actions: "Actions",
+      edit: "Edit",
+      view: "View",
+      no_skills_graphs_found: "No skills graphs found",
+      untitled: "Untitled",
+      paused: "Paused",
+      no_slug: "No slug",
+      skills_graph_updated_successfully: "Skills graph updated successfully",
+      skills_graph_created_successfully: "Skills graph created successfully",
+      skills_graph_updated_error: "Skills graph updated error",
+      skills_graph_created_error: "Skills graph created error",
+      loading_skills_graph: "Loading skills graph",
     }
   },
 };

@@ -10,10 +10,12 @@ export const useGraphs = () => {
     });
 };
 
-export const useGraph = (id: string) => {
+export const useGraph = (id: string | null) => {
+    console.log('useGraph called with id:', id);
     return useQuery({
         queryKey: [EndPoint.graph.key, id],
-        queryFn: async () => apiClient.get<SkillsGraph>(EndPoint.graph.url),
+        queryFn: async () => await apiClient.get<SkillsGraph>(`${EndPoint.graph.url}/${id}`),
+        enabled: !!id,
     });
 };
 

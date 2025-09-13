@@ -7,14 +7,15 @@ import { motion } from "framer-motion";
 import { Handle, Position } from "@xyflow/react";
 import { useTreeStore } from "@/store/tree_store";
 import { v4 as uuidv4 } from "uuid";
-import { PageStatus, ROOT_NODE_ID, CHILD_NODE_ID } from "@/utils/constants";
+import { ROOT_NODE_ID, CHILD_NODE_ID } from "@/utils/constants";
 import { useTranslation } from "react-i18next";
-import Button from "@/components/button";
 import { FaPlus } from "react-icons/fa";
 import Panel, { usePanel } from "@/components/panel";
 import Input from "../input";
 import { MemoizedSearchPopup, SearchPopupData } from "../search_popup";
 import { useSkills } from "@/providers/apis/skills";
+import Status, { StatusType  } from "../status";
+import { slugify } from "@/lib/utils";
 
 interface RootNodeProps {
   id: string;
@@ -26,7 +27,7 @@ interface RootNodeProps {
 }
 
 const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("root_node");
   const insertSiblingAfter = useTreeStore((state) => state.insertSiblingAfter);
   const [panelContentId, setPanelContentId] = useState("root-node-panel");
   const { isPanelOpen, openPanel, closePanel } = usePanel("root-node-panel");
@@ -47,7 +48,7 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
 
   const [slug, setSlug] = useState("");
 
-  const [status, setStatus] = useState<PageStatus>("draft");
+  const [status, setStatus] = useState<StatusType>("published");
 
   const addChild = (item: SearchPopupData) => {
     const newChildId = uuidv4()
@@ -56,6 +57,22 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
       id: newChildId,
     });
     insertSiblingAfter(id, newChildId, CHILD_NODE_ID, item.name);
+  };
+
+  const onTitleChange = (title: string) => {
+    updateNodeProperty(id, "title", title);
+    generateSlug(title);
+  };
+
+  const generateSlug = (title: string) => {
+    setSlug(slugify(title));
+    updateNodeProperty(id, "slug", slug);
+  };
+
+  const onStatusChange = (status: StatusType) => {
+    setStatus(status);
+    updateNodeProperty(id, "status", status);
+
   };
 
   return (
@@ -96,11 +113,18 @@ const RootNode: React.FC<RootNodeProps> = ({ id, data }) => {
       />
 
       <div>
+        <div className="float-right mb-4">
+          <Status status={status} onToggle={onStatusChange}/>
+        </div>
         <Input
           placeHolder={t("designation")}
-          onChange={() => {}}
+          onChange={onTitleChange}
           name={"forTitle"}
+          defaultValue={rootNodeTitle}
         />
+        <div className="flex items-center gap-2 text-sm text-secondary font-semibold mt-2 ml-1 underline">
+          <span>{slug}</span>
+        </div>
 
         <div className="flex items-end justify-center flex-1 mt-8">
           <MemoizedSearchPopup
